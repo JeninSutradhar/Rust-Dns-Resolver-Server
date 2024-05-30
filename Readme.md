@@ -14,8 +14,8 @@ This project implements a High-Performance DNS (Domain Name System) server in Ru
 ### Building the Project
 - Clone the repository and navigate to the project directory:
 ```sh
-git clone <repository_url>
-cd <repository_directory>
+git clone https://github.com/JeninSutradhar/Rust-Dns-Resolver-Server
+cd Rust-Dns-Resolver-Server
 ```
 
 ### Build the project using Cargo:
