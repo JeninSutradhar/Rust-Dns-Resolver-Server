@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust DNS Resolver Server Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        pre {
+            background: #f8f8f8;
+            padding: 10px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            background: #f8f8f8;
+            margin: 5px 0;
+            padding: 10px;
+            border-left: 3px solid #007acc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rust DNS Resolver Server</h1>
+        <p>This project implements a High-Performance DNS (Domain Name System) server in Rust. The server listens for DNS queries, processes them, and responds appropriately.</p>
+        <p><strong>The server reads incoming queries, parses them, and performs a recursive lookup if necessary. The results are then sent back to the client.</strong></p>
+
+        <h2>Features</h2>
+        <ul>
+            <li>Handles standard DNS queries</li>
+            <li>Supports recursive DNS lookups</li>
+            <li>Logs received queries and responses</li>
+            <li>Error handling for malformed requests and server failures</li>
+        </ul>
+
+        <h2>Usage</h2>
+
+        <h3>Building the Project</h3>
+        <p>Clone the repository and navigate to the project directory:</p>
+        <pre><code>git clone &lt;repository_url&gt;
+cd &lt;repository_directory&gt;</code></pre>
+
+        <h3>Build the project using Cargo:</h3>
+        <pre><code>cargo build --release</code></pre>
+
+        <h3>Running the Server</h3>
+        <p>To run the DNS server, execute the following command:</p>
+        <pre><code>cargo run --release</code></pre>
+        <p><strong>By default, the server will start listening on port 8080.</strong></p>
+
+        <h3>Usage</h3>
+        <p>Once the server is running, you can use the dig command to test it. Open a terminal and run:</p>
+        <pre><code>dig @127.0.0.1 -p 8080 example.com</code></pre>
+        <p>For example:</p>
+        <pre><code>dig @127.0.0.1 -p 8080 yahoo.com</code></pre>
+        <p><strong>This will send a DNS query for example.com to the server running on localhost at port 8080.</strong></p>
+
+        <h3>Example Output</h3>
+        <p>When a query is received, the server will log the details:</p>
+        <pre><code>Received query: Question { name: "example.com", qtype: A }
+Answer: A { domain: "example.com", addr: 93.184.216.34, ttl: 3600 }</code></pre>
+
+        <h2>Use Cases</h2>
+        <ul>
+            <li><strong>Local DNS Resolution:</strong> Use this server for resolving DNS queries within a local network.</li>
+            <li><strong>Learning and Experimentation:</strong> Understand the inner workings of DNS by inspecting the code and modifying it.</li>
+            <li><strong>Custom DNS Solutions:</strong> Extend the server to include custom DNS records or integrate with other systems.</li>
+        </ul>
+
+        <h2>Error Handling</h2>
+        <p>The server handles the following errors:</p>
+        <ol>
+            <li><strong>Malformed requests:</strong> Responds with FORMERR</li>
+            <li><strong>Server failures:</strong> Responds with SERVFAIL</li>
+        </ol>
+
+        <h2>Modifying Server Addresses and Ports</h2>
+        <p>To change the server address or port, modify the following lines in the <code>main.rs</code> file:</p>
+        <pre><code>fn main() -> Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    // Bind to the UDP socket
+    let socket = UdpSocket::bind(("0.0.0.0", 8080))?; // Change the address and port here
+    
+    // Continuously handle incoming queries
+    loop {
+        match dns::handle_query(&socket) {
+            Ok(_) => {},
+            Err(e) => eprintln!("An error occurred: {}", e),
+        }
+    }
+}</code></pre>
+        <p><strong>Replace "0.0.0.0" with the desired IP address and 8080 with the desired port number.</strong></p>
+
+        <h2>Code Explanation</h2>
+        <p>This section provides a brief overview of the main components of the DNS server implementation in Rust.</p>
+
+        <h3>main.rs</h3>
+        <p>The <code>main.rs</code> file is the entry point of the application. It sets up a UDP socket that listens for incoming DNS queries on a specified address and port. The <code>main</code> function enters an infinite loop, continuously calling the <code>handle_query</code> function to process incoming requests. Any errors encountered during this process are logged to the console.</p>
+
+        <h3>byte_packet_buffer</h3>
+        <p>The <code>byte_packet_buffer.rs</code> module provides a buffer implementation for reading and writing raw bytes. This buffer is used to parse DNS packets from incoming data and to serialize DNS packets for outgoing responses. It includes methods for reading and writing various data types, such as strings, integers, and byte arrays.</p>
+
+        <h3>dns_packet</h3>
+        <p>The <code>dns_packet.rs</code> module defines the structure of a DNS packet. It includes definitions for the DNS header, questions, answers, and other sections of a DNS message. This module also provides methods for serializing and deserializing DNS packets, making it easy to convert between raw bytes and structured data.</p>
+
+        <h3>dns_record</h3>
+        <p>The <code>dns_record.rs</code> module defines the various types of DNS records, such as A, NS, and CNAME records. It includes methods for reading and writing these records to and from the byte buffer. This module also provides functionality for handling the different record types and their associated data.</p>
+
+        <h3>dns.rs</h3>
+        <p>The <code>dns.rs</code> module contains the core logic for handling DNS packets. It includes functions for reading and writing DNS packets, processing queries, and generating responses. The <code>handle_query</code> function reads an incoming DNS query from the UDP socket, parses it, and constructs an appropriate response. If a recursive lookup is necessary, the function performs the lookup and includes the results in the response.</p>
+
+        <p>These components work together to provide a fully functional DNS server that can process queries, perform recursive lookups, and generate appropriate responses. Each module is responsible for a specific aspect of the DNS protocol, ensuring a modular and maintainable codebase.</p>
+    </div>
+</body>
+</html>
