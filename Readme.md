@@ -11,6 +11,9 @@ This project implements a High-Performance DNS (Domain Name System) server in Ru
 
 # Usage
 
+![Dns](https://github.com/JeninSutradhar/Rust-Dns-Resolver-Server/assets/111521642/c27031ef-0997-42d5-add5-8ef46841725e)
+
+
 ### Building the Project
 - Clone the repository and navigate to the project directory:
 ```sh
