@@ -34,7 +34,7 @@ cargo run --release
 - **By default, the server will start listening on port 8080.**
 
 ### Usage
-- Once the server is running, you can use the dig command to test it. Open a terminal and run:
+- Once the server is running, you can use the dig command to test it. Open a another terminal and run:
 ```sh
 dig @127.0.0.1 -p 8080 example.com
 ```
